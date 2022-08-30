@@ -5,7 +5,7 @@
 
 buildscript {
   extra.apply {
-    set("minSdkVersion", 21)
+    set("minSdkVersion", 16)
     set("compileSdkVersion", 29)
     set("targetSdkVersion", 29)
     set("buildToolsVersion", "29.0.3")
@@ -18,7 +18,7 @@ buildscript {
   }
   dependencies {
     /* https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google */
-    classpath("com.android.tools.build:gradle:4.2.2")
+    classpath("com.android.tools.build:gradle:4.0.0")
 
     /* https://github.com/radarsh/gradle-test-logger-plugin */
     classpath("com.adarshr:gradle-test-logger-plugin:2.0.0")
@@ -33,10 +33,28 @@ allprojects {
   repositories {
     mavenLocal()
     google()
-    mavenCentral()
+    jcenter()
     // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
     maven {
       url = uri("$rootDir/KeychainExample/node_modules/react-native/android")
+    }
+  }
+}
+
+allprojects {
+  configurations.all {
+    resolutionStrategy.eachDependency {
+      when (requested.group) {
+        "com.android.support" -> useVersion("28.0.0")
+        "android.arch.lifecycle" -> useVersion("1.1.1")
+        "android.arch.core" -> useVersion("1.1.1")
+        "com.facebook.fresco" -> useVersion("2.0.+")
+      }
+
+      when ("${requested.group}:${requested.name}") {
+        "com.facebook.react:react-native" -> useVersion("0.63.4")
+        "com.facebook.soloader:soloader" -> useVersion("0.6.+")
+      }
     }
   }
 }

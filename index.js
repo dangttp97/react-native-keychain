@@ -3,11 +3,7 @@ import { NativeModules, Platform } from 'react-native';
 
 const { RNKeychainManager } = NativeModules;
 
-export const SECURITY_LEVEL: {
-  ANY: string,
-  SECURE_SOFTWARE: string,
-  SECURE_HARDWARE: string,
-} = Object.freeze({
+export const SECURITY_LEVEL = Object.freeze({
   ANY: RNKeychainManager && RNKeychainManager.SECURITY_LEVEL_ANY,
   SECURE_SOFTWARE:
     RNKeychainManager && RNKeychainManager.SECURITY_LEVEL_SECURE_SOFTWARE,
@@ -98,10 +94,10 @@ type NormalizedOptions = {
   ...BaseOptions,
 };
 
-export type Options = $Shape<{|
+export type Options = {
   authenticationPrompt?: string | AuthenticationPrompt,
   ...BaseOptions,
-|}>;
+};
 
 export type Result = {|
   +service: string,
@@ -217,7 +213,7 @@ export function resetGenericPassword(
  * Gets all `service` keys used in keychain entries.
  * @return {Promise} Resolves to an array of strings
  */
-export function getAllGenericPasswordServices(): Promise<string[]> {
+export async function getAllGenericPasswordServices(): Promise<string[]> {
   return RNKeychainManager.getAllGenericPasswordServices();
 }
 

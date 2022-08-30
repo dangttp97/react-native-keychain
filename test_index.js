@@ -26,12 +26,11 @@ canImplyAuthentication().then((result) => {
   (result: boolean);
 });
 
-/* eslint-disable no-unused-vars */
-// $FlowExpectedError - not valid accessible value
+// eslint-disable-next-line no-unused-vars
 const simpleOptions2: Options = {
+  // $FlowExpectedError - not valid accessible value
   accessible: 'ACCESSIBLE.ALWAYS',
 };
-/* eslint-enable no-unused-vars */
 
 const simpleOptions: Options = {
   accessControl: ACCESS_CONTROL.BIOMETRY_ANY,

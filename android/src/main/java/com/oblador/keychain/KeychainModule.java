@@ -286,30 +286,20 @@ public class KeychainModule extends ReactContextBaseJavaModule {
         return;
       }
 
-      final String storageName = resultSet.cipherStorageName;
+      // get the best storage
+      final String accessControl = getAccessControlOrDefault(options);
+      final boolean useBiometry = getUseBiometry(accessControl);
+      final CipherStorage current = getSelectedStorage(options);
       final String rules = getSecurityRulesOrDefault(options);
+
       final PromptInfo promptInfo = getPromptInfo(options);
-
-      CipherStorage cipher = null;
-
-      // Only check for upgradable ciphers for FacebookConseal as that
-      // is the only cipher that can be upgraded
-      if (rules.equals(Rules.AUTOMATIC_UPGRADE) && storageName.equals(KnownCiphers.FB)){
-        // get the best storage
-        final String accessControl = getAccessControlOrDefault(options);
-        final boolean useBiometry = getUseBiometry(accessControl);
-        cipher = getSelectedStorage(options);
-      } else {
-        cipher = getCipherStorageByName(storageName);
-      }
-
-      final DecryptionResult decryptionResult = decryptCredentials(alias, cipher, resultSet, rules, promptInfo);
+      final DecryptionResult decryptionResult = decryptCredentials(alias, current, resultSet, rules, promptInfo);
 
       final WritableMap credentials = Arguments.createMap();
       credentials.putString(Maps.SERVICE, alias);
       credentials.putString(Maps.USERNAME, decryptionResult.username);
       credentials.putString(Maps.PASSWORD, decryptionResult.password);
-      credentials.putString(Maps.STORAGE, cipher.getCipherStorageName());
+      credentials.putString(Maps.STORAGE, current.getCipherStorageName());
 
       promise.resolve(credentials);
     } catch (KeyStoreAccessException e) {
@@ -498,11 +488,11 @@ public class KeychainModule extends ReactContextBaseJavaModule {
     return getAliasOrDefault(service);
   }
 
-  /** Get automatic secret manipulation rules, default: No upgrade. */
+  /** Get automatic secret manipulation rules, default: Automatic Upgrade. */
   @Rules
   @NonNull
   private static String getSecurityRulesOrDefault(@Nullable final ReadableMap options) {
-    return getSecurityRulesOrDefault(options, Rules.NONE);
+    return getSecurityRulesOrDefault(options, Rules.AUTOMATIC_UPGRADE);
   }
 
   /** Get automatic secret manipulation rules. */
@@ -732,7 +722,7 @@ public class KeychainModule extends ReactContextBaseJavaModule {
   /* package */ CipherStorage getCipherStorageForCurrentAPILevel(final boolean useBiometry)
     throws CryptoFailedException {
     final int currentApiLevel = Build.VERSION.SDK_INT;
-    final boolean isBiometry = useBiometry && (isFingerprintAuthAvailable() || isFaceAuthAvailable() || isIrisAuthAvailable());
+    final boolean isBiometry = (isFingerprintAuthAvailable() || isFaceAuthAvailable() || isIrisAuthAvailable()) && useBiometry;
     CipherStorage foundCipher = null;
 
     for (CipherStorage variant : cipherStorageMap.values()) {
