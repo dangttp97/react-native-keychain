@@ -6,9 +6,9 @@
 buildscript {
   extra.apply {
     set("minSdkVersion", 21)
-    set("compileSdkVersion", 30)
-    set("targetSdkVersion", 30)
-    set("buildToolsVersion", "30.0.2")
+    set("compileSdkVersion", 29)
+    set("targetSdkVersion", 29)
+    set("buildToolsVersion", "29.0.3")
   }
   repositories {
     mavenLocal()
