@@ -221,22 +221,12 @@ public class CipherStorageKeystoreRsaEcb extends CipherStorageBase {
 
     final int purposes = KeyProperties.PURPOSE_DECRYPT | KeyProperties.PURPOSE_ENCRYPT;
 
-    if(Build.VERSION_CODES.SDK_INT == Build.VERSION_CODES.R){
-      return new KeyGenParameterSpec.Builder(alias, purposes)
-      .setBlockModes(BLOCK_MODE_ECB)
-      .setEncryptionPaddings(PADDING_PKCS1)
-      .setRandomizedEncryptionRequired(true)
-      .setUserAuthenticationRequired(true)
-      .setUserAuthenticationParameters(1, KeyProperties.AUTH_BIOMETRIC_STRONG)
-      .setKeySize(ENCRYPTION_KEY_SIZE);
-    }
-
     return new KeyGenParameterSpec.Builder(alias, purposes)
       .setBlockModes(BLOCK_MODE_ECB)
       .setEncryptionPaddings(PADDING_PKCS1)
       .setRandomizedEncryptionRequired(true)
       .setUserAuthenticationRequired(true)
-      .setUserAuthenticationValidityDurationSeconds(1)
+      .setUserAuthenticationValidityDurationSeconds(0)
       .setKeySize(ENCRYPTION_KEY_SIZE);
   }
 
